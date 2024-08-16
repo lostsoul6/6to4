@@ -36,7 +36,7 @@ ip -6 tunnel add GRE6Tun_To_IR mode ip6gre remote 2009:499:1d10:e1d::1 local 200
 ip addr add 180.18.18.2/30 dev GRE6Tun_To_IR
 ip link set GRE6Tun_To_IR mtu 1436
 ip link set GRE6Tun_To_IR up
-{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
+
 EOF
 )
 
@@ -70,6 +70,7 @@ EOF
     eval "$commands"
     setup_rc_local "$commands"
     echo "Commands executed for the Iran server."
+    { echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
 
 elif [ "$server_choice" -eq 3 ]; then
     ip tunnel del 6to4_To_IR 2>/dev/null
