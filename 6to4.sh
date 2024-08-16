@@ -17,7 +17,7 @@ $commands
 exit 0
 EOF
 )
-    echo "$command_block" | tee $FILE
+    echo "$command_block" | sudo tee $FILE
     chmod +x $FILE
     echo "Commands added to /etc/rc.local"
 }
@@ -81,7 +81,7 @@ elif [ "$server_choice" -eq 3 ]; then
     iptables -t nat -D PREROUTING -j DNAT --to-destination 180.18.18.2 2>/dev/null
     iptables -t nat -D POSTROUTING -j MASQUERADE 2>/dev/null
 
-    rm -f /etc/rc.local
+    sudo rm -f /etc/rc.local
 
     echo "Tunnels and /etc/rc.local removed."
 
