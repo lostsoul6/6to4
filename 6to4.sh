@@ -14,8 +14,6 @@ setup_rc_local() {
 
 $commands
 
-{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
-timedatectl set-timezone Asia/Tehran
 exit 0
 EOF
 )
