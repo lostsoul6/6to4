@@ -1,5 +1,5 @@
 #!/bin/bash
-
+{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
 echo "Which server is this?"
 echo "1) Outside"
 echo "2) Iran"
@@ -63,14 +63,13 @@ sysctl net.ipv4.ip_forward=1
 iptables -t nat -A PREROUTING -p tcp --dport 22 -j DNAT --to-destination 180.18.18.1
 iptables -t nat -A PREROUTING -j DNAT --to-destination 180.18.18.2
 iptables -t nat -A POSTROUTING -j MASQUERADE
-{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
+
 EOF
 )
 
     eval "$commands"
     setup_rc_local "$commands"
     echo "Commands executed for the Iran server."
-    { echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
 
 elif [ "$server_choice" -eq 3 ]; then
     ip tunnel del 6to4_To_IR 2>/dev/null
