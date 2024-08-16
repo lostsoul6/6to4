@@ -18,7 +18,7 @@ exit 0
 EOF
 )
     echo "$command_block" | sudo tee $FILE
-    sudo chmod +x $FILE
+    chmod +x $FILE
     echo "Commands added to /etc/rc.local"
 }
 
@@ -36,6 +36,7 @@ ip -6 tunnel add GRE6Tun_To_IR mode ip6gre remote 2009:499:1d10:e1d::1 local 200
 ip addr add 180.18.18.2/30 dev GRE6Tun_To_IR
 ip link set GRE6Tun_To_IR mtu 1436
 ip link set GRE6Tun_To_IR up
+{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
 EOF
 )
 
@@ -62,6 +63,7 @@ sysctl net.ipv4.ip_forward=1
 iptables -t nat -A PREROUTING -p tcp --dport 22 -j DNAT --to-destination 180.18.18.1
 iptables -t nat -A PREROUTING -j DNAT --to-destination 180.18.18.2
 iptables -t nat -A POSTROUTING -j MASQUERADE
+{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
 EOF
 )
 
