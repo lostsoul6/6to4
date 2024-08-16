@@ -1,5 +1,5 @@
 #!/bin/bash
-{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
+
 echo "Which server is this?"
 echo "1) Outside"
 echo "2) Iran"
