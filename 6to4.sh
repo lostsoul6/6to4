@@ -4,12 +4,18 @@ echo "Which server is this?"
 echo "1) Outside"
 echo "2) Iran"
 echo "3) Remove tunnels"
-read -p "Select an option (1, 2 or 3): " server_choice
+echo "4) Enable BBR"
+echo "5) Fix Whatsapp Time"
+read -p "Select an option (1, 2, 3, 4, or 5): " server_choice
 
 setup_rc_local() {
     FILE="/etc/rc.local"
     commands="$1"
-    command_block=$(cat <<EOF
+    
+    if [ -f "$FILE" ]; then
+        sudo sed -i -e "\$i $commands\n" $FILE
+    else
+        command_block=$(cat <<EOF
 #! /bin/bash
 
 $commands
@@ -17,9 +23,19 @@ $commands
 exit 0
 EOF
 )
-    echo "$command_block" | tee $FILE
-    chmod +x $FILE
+        echo "$command_block" | sudo tee $FILE
+        sudo chmod +x $FILE
+    fi
     echo "Commands added to /etc/rc.local"
+}
+
+# Function to handle Fix Whatsapp Time option
+fix_whatsapp_time() {
+    commands="sudo timedatectl set-timezone Asia/Tehran"
+    
+    eval "$commands"
+    setup_rc_local "$commands"
+    echo "Whatsapp time fixed to Asia/Tehran timezone."
 }
 
 if [ "$server_choice" -eq 1 ]; then
@@ -36,9 +52,6 @@ ip -6 tunnel add GRE6Tun_To_IR mode ip6gre remote 2009:499:1d10:e1d::1 local 200
 ip addr add 180.18.18.2/30 dev GRE6Tun_To_IR
 ip link set GRE6Tun_To_IR mtu 1436
 ip link set GRE6Tun_To_IR up
-{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
-timedatectl set-timezone Asia/Tehran
-
 EOF
 )
 
@@ -65,9 +78,6 @@ sysctl net.ipv4.ip_forward=1
 iptables -t nat -A PREROUTING -p tcp --dport 22 -j DNAT --to-destination 180.18.18.1
 iptables -t nat -A PREROUTING -j DNAT --to-destination 180.18.18.2
 iptables -t nat -A POSTROUTING -j MASQUERADE
-{ echo "nameserver 8.8.8.8"; echo "nameserver 1.1.1.1"; } >  /etc/resolv.conf
-timedatectl set-timezone Asia/Tehran
-
 EOF
 )
 
@@ -85,10 +95,22 @@ elif [ "$server_choice" -eq 3 ]; then
     iptables -t nat -D PREROUTING -j DNAT --to-destination 180.18.18.2 2>/dev/null
     iptables -t nat -D POSTROUTING -j MASQUERADE 2>/dev/null
 
-    rm -f /etc/rc.local
+    sudo bash -c '> /etc/rc.local'
+    echo -e '#! /bin/bash\n\nexit 0' | sudo tee /etc/rc.local > /dev/null
+    sudo chmod +x /etc/rc.local
 
-    echo "Tunnels and /etc/rc.local removed."
+    echo "Tunnels removed. /etc/rc.local is empty now."
+
+elif [ "$server_choice" -eq 4 ]; then
+    wget --no-check-certificate -O /opt/bbr.sh https://github.com/teddysun/across/raw/master/bbr.sh
+    chmod 755 /opt/bbr.sh
+    /opt/bbr.sh
+
+    echo "BBR optimization enabled."
+
+elif [ "$server_choice" -eq 5 ]; then
+    fix_whatsapp_time
 
 else
-    echo "Invalid option. Please select 1, 2 or 3."
+    echo "Invalid option. Please select 1, 2, 3, 4, or 5."
 fi
