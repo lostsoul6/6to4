@@ -7,8 +7,8 @@ echo "3) Enable BBR"
 echo "4) Fix Whatsapp Time"
 echo "5) Optimize"
 echo "6) Install x-ui"
-echo "7) Disable IPv6 - After server reboot IPv6 is activated"
-echo "8) Change NameServer"
+echo "7) Change NameServer"
+echo "8) Disable IPv6 - After server reboot IPv6 is activated"
 read -p "Select an option (1, 2, 3, 4, 5, 6, 7, or 8): " server_choice
 
 setup_rc_local() {
@@ -243,10 +243,10 @@ case $server_choice in
         install_x_ui
         ;;
     7)
-        disable_ipv6
+        change_nameserver
         ;;
     8)
-        change_nameserver
+        disable_ipv6
         ;;
     *)
         echo "Invalid option. Please select 1, 2, 3, 4, 5, 6, 7, or 8."
