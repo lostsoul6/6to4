@@ -17,24 +17,24 @@ setup_rc_local() {
 
     # Ensure the file exists and is executable
     if [ ! -f "$FILE" ]; then
-        echo -e '#! /bin/bash\n\nexit 0' | sudo tee "$FILE" > /dev/null
-        sudo chmod +x "$FILE"
+        echo -e '#! /bin/bash\n\nexit 0' | tee "$FILE" > /dev/null
+        chmod +x "$FILE"
     fi
 
     # Check if the file already contains content and add new commands accordingly
     if grep -q 'ip tunnel add' "$FILE"; then
         # If the file has existing commands, add new ones above 'exit 0'
-        sudo bash -c "sed -i '/exit 0/i $commands' $FILE"
+        bash -c "sed -i '/exit 0/i $commands' $FILE"
     else
         # If the file is empty or does not have the relevant commands, replace its content
-        sudo bash -c "echo -e '#! /bin/bash\n\n$commands\n\nexit 0' > $FILE"
+        bash -c "echo -e '#! /bin/bash\n\n$commands\n\nexit 0' > $FILE"
     fi
     echo "Commands added to /etc/rc.local"
 }
 
 # Function to handle Fix Whatsapp Time option
 fix_whatsapp_time() {
-    commands="sudo timedatectl set-timezone Asia/Tehran"
+    commands="timedatectl set-timezone Asia/Tehran"
     setup_rc_local "$commands"
     echo "Whatsapp time fixed to Asia/Tehran timezone."
 }
@@ -58,7 +58,7 @@ optimize() {
             cp "$file" "$temp_file"
             if ! grep -q "$line" "$file"; then
                 sed -i '/^\[Manager\]/a '"$line" "$temp_file"
-                sudo mv "$temp_file" "$file"
+                mv "$temp_file" "$file"
                 echo "Added '$line' to $file"
             else
                 echo "The line '$line' already exists in $file"
@@ -78,7 +78,7 @@ optimize() {
 
     # Optimize limits.conf
     if [ -f "$LIMITS_CONF" ];then
-        cat <<EOF | sudo tee -a "$LIMITS_CONF"
+        cat <<EOF | tee -a "$LIMITS_CONF"
 * hard nofile 1024000
 * soft nofile 1024000
 root hard nofile 1024000
@@ -90,14 +90,14 @@ EOF
     fi
 
     # Optimize sysctl.d/local.conf
-    cat <<EOF | sudo tee "$SYSCTL_CONF"
+    cat <<EOF | tee "$SYSCTL_CONF"
 # max open files
 fs.file-max = 1024000
 EOF
     echo "Added sysctl settings to $SYSCTL_CONF"
 
     # Apply sysctl changes
-    sudo sysctl --system
+    sysctl --system
     echo "Sysctl changes applied."
 }
 
@@ -122,9 +122,9 @@ install_x_ui() {
 # Function to disable IPv6
 disable_ipv6() {
     commands=$(cat <<EOF
-sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
-sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
-sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
+sysctl -w net.ipv6.conf.lo.disable_ipv6=1
 EOF
 )
 
@@ -196,13 +196,13 @@ change_nameserver() {
     FILE="/etc/resolv.conf"
     if [ -f "$FILE" ]; then
         # Backup the original file
-        sudo cp "$FILE" "${FILE}.bak"
+        cp "$FILE" "${FILE}.bak"
 
         # Remove existing nameserver lines
-        sudo sed -i '/^nameserver /d' "$FILE"
+        sed -i '/^nameserver /d' "$FILE"
 
         # Add new nameserver lines
-        echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee -a "$FILE" > /dev/null
+        echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | tee -a "$FILE" > /dev/null
 
         echo "NameServers have been updated."
     else
@@ -223,8 +223,8 @@ case $server_choice in
         ip link del GRE6Tun_To_IR 2>/dev/null
         iptables -t nat -D PREROUTING -j DNAT --to-destination 180.18.18.2 2>/dev/null
         iptables -t nat -D POSTROUTING -j MASQUERADE 2>/dev/null
-        echo -e '#! /bin/bash\n\nexit 0' | sudo tee /etc/rc.local > /dev/null
-        sudo chmod +x /etc/rc.local
+        echo -e '#! /bin/bash\n\nexit 0' | tee /etc/rc.local > /dev/null
+        chmod +x /etc/rc.local
         echo "Tunnels removed. /etc/rc.local is empty now."
         ;;
     3)
