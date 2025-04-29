@@ -150,7 +150,7 @@ ip link set 6to4_To_IR mtu 1480
 ip link set 6to4_To_IR up
 
 ip -6 tunnel add GRE6Tun_To_IR mode ip6gre remote 2009:499:1d10:e1d::1 local 2009:499:1d10:e1d::2
-ip addr add 180.18.18.2/30 dev GRE6Tun_To_IR
+ip addr add 120.117.10.2/30 dev GRE6Tun_To_IR
 ip link set GRE6Tun_To_IR mtu 1436
 ip link set GRE6Tun_To_IR up
 EOF
@@ -171,13 +171,13 @@ ip link set 6to4_To_KH mtu 1480
 ip link set 6to4_To_KH up
 
 ip -6 tunnel add GRE6Tun_To_KH mode ip6gre remote 2009:499:1d10:e1d::2 local 2009:499:1d10:e1d::1
-ip addr add 180.18.18.1/30 dev GRE6Tun_To_KH
+ip addr add 120.117.10.1/30 dev GRE6Tun_To_KH
 ip link set GRE6Tun_To_KH mtu 1436
 ip link set GRE6Tun_To_KH up
 
 sysctl net.ipv4.ip_forward=1
-iptables -t nat -A PREROUTING -p tcp --dport 22 -j DNAT --to-destination 180.18.18.1
-iptables -t nat -A PREROUTING -j DNAT --to-destination 180.18.18.2
+iptables -t nat -A PREROUTING -p tcp --dport 22 -j DNAT --to-destination 120.117.10.1
+iptables -t nat -A PREROUTING -j DNAT --to-destination 120.117.10.2
 iptables -t nat -A POSTROUTING -j MASQUERADE
 EOF
 )
@@ -221,7 +221,7 @@ case $server_choice in
         ip -6 tunnel del GRE6Tun_To_IR 2>/dev/null
         ip link del 6to4_To_IR 2>/dev/null
         ip link del GRE6Tun_To_IR 2>/dev/null
-        iptables -t nat -D PREROUTING -j DNAT --to-destination 180.18.18.2 2>/dev/null
+        iptables -t nat -D PREROUTING -j DNAT --to-destination 120.117.10.2 2>/dev/null
         iptables -t nat -D POSTROUTING -j MASQUERADE 2>/dev/null
         echo -e '#! /bin/bash\n\nexit 0' | tee /etc/rc.local > /dev/null
         chmod +x /etc/rc.local
