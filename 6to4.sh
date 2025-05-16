@@ -146,12 +146,12 @@ handle_six_to_four() {
         commands=$(cat <<EOF
 ip tunnel add 6to4_To_IR mode sit remote $ipiran local $ipkharej
 ip -6 addr add 2009:499:1d10:e1d::2/64 dev 6to4_To_IR
-ip link set 6to4_To_IR mtu 1480
+ip link set 6to4_To_IR mtu 1420
 ip link set 6to4_To_IR up
 
 ip -6 tunnel add GRE6Tun_To_IR mode ip6gre remote 2009:499:1d10:e1d::1 local 2009:499:1d10:e1d::2
 ip addr add 120.117.10.2/30 dev GRE6Tun_To_IR
-ip link set GRE6Tun_To_IR mtu 1436
+ip link set GRE6Tun_To_IR mtu 1420
 ip link set GRE6Tun_To_IR up
 EOF
 )
@@ -167,12 +167,12 @@ EOF
         commands=$(cat <<EOF
 ip tunnel add 6to4_To_KH mode sit remote $ipkharej local $ipiran
 ip -6 addr add 2009:499:1d10:e1d::1/64 dev 6to4_To_KH
-ip link set 6to4_To_KH mtu 1480
+ip link set 6to4_To_KH mtu 1420
 ip link set 6to4_To_KH up
 
 ip -6 tunnel add GRE6Tun_To_KH mode ip6gre remote 2009:499:1d10:e1d::2 local 2009:499:1d10:e1d::1
 ip addr add 120.117.10.1/30 dev GRE6Tun_To_KH
-ip link set GRE6Tun_To_KH mtu 1436
+ip link set GRE6Tun_To_KH mtu 1420
 ip link set GRE6Tun_To_KH up
 
 sysctl net.ipv4.ip_forward=1
